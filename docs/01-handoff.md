@@ -141,7 +141,7 @@ src/main/resources/
 
 ## 9. 현재 진행 상황
 
-**✅ ch00 ~ ch04 완료 · 🟡 다음은 ch05**
+**✅ ch00 ~ ch05 완료 · 🟡 다음은 ch06**
 
 | # | 챕터 | 상태 |
 |---|---|---|
@@ -150,21 +150,30 @@ src/main/resources/
 | 02 | 채팅방 도메인 + REST API | ✅ |
 | 03 | 채팅 메시지 API (커서 기반 증분 조회) | ✅ |
 | 04 | 프론트 — 폴링 방식 채팅방 | ✅ |
-| **05** | **폴링 vs SSE — 개념과 비용** | **🟡 다음** |
-| 06~12 | SSE 백/프론트, 쓰로틀링, 입퇴장, HTTPS, STOMP, 정리 | ⬜ |
+| 05 | 폴링 vs SSE — 개념과 비용 ([문서](05-polling-vs-sse.md)) | ✅ |
+| **06** | **백엔드 SSE — SseEmitters** | **🟡 다음** |
+| 07~12 | 프론트 SSE, 쓰로틀링, 입퇴장, HTTPS, STOMP, 정리 | ⬜ |
 
 전체 목록은 [`00-curriculum.md`](00-curriculum.md), 각 챕터 코드는 [`02-reference.md`](02-reference.md).
 
 > **이 표는 챕터를 끝낼 때마다 갱신할 것.**
 
-### ch05 에서 할 일 (코드 없는 개념 챕터)
+### ch05 에서 이미 깔아둔 복선 (ch06 에서 회수할 것)
 
-폴링의 비용을 **숫자로** 보여주고 SSE 와 비교한다.
-- ch04 에서 사용자가 직접 본 것: Network 탭에 1초마다 쌓이는 `[]` 응답
-- 접속자 N명 × 초당 1회 → 요청 수 계산, 헤더 오버헤드, 평균 지연(간격의 절반)
-- SSE 는 커넥션 1개를 열어두고 서버가 밀어줌 → 조용하면 트래픽 0, 지연 ~0
-- SSE 의 한계(단방향, 브라우저당 HTTP/1.1 커넥션 6개 제한) → ch11 WebSocket 복선
-- 다이어그램으로 시퀀스 비교하면 좋음
+[`05-polling-vs-sse.md`](05-polling-vs-sse.md) 에서 아래를 **이미 설명했습니다.**
+ch06 에서 같은 내용을 처음부터 다시 설명하지 말고, "ch05 에서 말한 그것" 으로 이어받으세요.
+
+| 복선 | ch05 위치 | ch06 에서 회수 |
+|---|---|---|
+| 죽은 커넥션을 목록에서 걷어내야 한다 | STEP 7-③ | `emitter.onCompletion` / `onError` / `onTimeout` |
+| 여러 스레드가 emitter 목록을 동시에 건드린다 | STEP 7-④ | `ConcurrentHashMap` + `CopyOnWriteArrayList` |
+| `SseEmitter` 는 워커 스레드를 안 잡는다 | STEP 7-④ → `qna/003` | 컨트롤러가 emitter 를 **즉시 return** 하는 이유 |
+| SSE 는 데이터가 아니라 **신호**로 쓴다 | STEP 9 | 서버는 id 만 쏨. 본격 회수는 ch07 |
+| HTTP/1.1 커넥션 6개 한도 | STEP 7-② → `qna/004` | ch10 HTTPS 의 진짜 이유 |
+
+ch06 코드는 [`02-reference.md`](02-reference.md) 의 "ch06 — 백엔드 SSE" 절에 있습니다
+(`global/sse/SseEmitters.kt`, `domain/sse/controller/SseController.kt`,
+`ApiV1ChatMessageController` 변경).
 
 ---
 
