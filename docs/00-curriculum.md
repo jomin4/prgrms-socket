@@ -37,11 +37,11 @@
 
 | # | 제목 | 핵심 개념 | 태그 | 상태 |
 |---|---|---|---|---|
-| 00 | 학습 환경 세팅 | 레포/자동화 스크립트/커리큘럼 | `ch00` | ⬜ |
-| 01 | 스프링부트 프로젝트 뼈대 | Gradle KTS, `@SpringBootApplication`, application.yaml | `ch01` | ⬜ |
-| 02 | 채팅방 도메인 + REST API | data class, `@RestController`, `@CrossOrigin`, 인메모리 저장 | `ch02` | ⬜ |
-| 03 | 채팅 메시지 API | `afterChatMessageId` 증분 조회, 메시지 작성 | `ch03` | ⬜ |
-| 04 | 프론트 — 폴링 방식 채팅방 | React ESM, `useEffect`/`useRef`, `setInterval` 폴링 | `ch04` | ⬜ |
+| 00 | 학습 환경 세팅 | 레포/자동화 스크립트/커리큘럼 | `ch00` | ✅ |
+| 01 | 스프링부트 프로젝트 뼈대 | Gradle KTS, `@SpringBootApplication`, application.yaml | `ch01` | ✅ |
+| 02 | 채팅방 도메인 + REST API | data class, `@RestController`, `@CrossOrigin`, 인메모리 저장 | `ch02` | ✅ |
+| 03 | 채팅 메시지 API | `afterChatMessageId` 증분 조회, 메시지 작성 | `ch03` | ✅ |
+| 04 | 프론트 — 폴링 방식 채팅방 | React ESM, `useEffect`/`useRef`, `setInterval` 폴링 | `ch04` | 🟡 |
 | 05 | 폴링 vs SSE — 개념과 비용 | 요청 수, 지연, 커넥션 유지, 언제 뭘 쓰나 | `ch05` | ⬜ |
 | 06 | 백엔드 SSE — SseEmitters | `SseEmitter`, `ConcurrentHashMap`, `CopyOnWriteArrayList`, 커넥션 정리 | `ch06` | ⬜ |
 | 07 | 프론트 SSE — EventSource | 잘못된 방식(데이터 직접 수신) vs 옳은 방식(신호로만 사용) | `ch07` | ⬜ |
