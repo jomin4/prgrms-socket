@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>실시간 채팅 — 폴링 방식</title>
+
+  <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: "Pretendard Variable", Pretendard, sans-serif; }
+  </style>
+</head>
+<body class="p-4">
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel" data-type="module">
+    import React, { useState, useEffect, useRef } from "https://esm.sh/react@19";
+    import ReactDOMClient from "https://esm.sh/react-dom@19/client";
+
+    const rootElement = ReactDOMClient.createRoot(document.getElementById("root"));
+
+    function App() {
+      const chatRoomId = 2;
+      const lastChatMessageId = useRef(0);
+      const [chatRoom, setChatRoom] = useState();
+      const [chatMessages, setChatMessages] = useState([]);
+
+      const loadMoreChatMessages = () => {
+        fetch(
+          `/api/v1/chat/rooms/${chatRoomId}/messages?afterChatMessageId=${lastChatMessageId.current}`
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.length > 0) {
+              data.reverse();
+              lastChatMessageId.current = data[0].id;
+              setChatMessages((chatMessages) => [...data, ...chatMessages]);
+            }
+          });
+      };
+
+      useEffect(() => {
+        // 채팅방 정보 가져오기
+        fetch(`/api/v1/chat/rooms/${chatRoomId}`)
+          .then((response) => response.json())
+          .then(setChatRoom);
+
+        // 1초마다 메시지 로드
+        const intervalId = setInterval(loadMoreChatMessages, 1000);
+
+        // 컴포넌트가 언마운트될 때 인터벌 해제
+        return () => clearInterval(intervalId);
+      }, [chatRoomId]); // chatRoomId가 바뀔 때만 재실행
+
+      const onChatMessageFormSubmit = (e) => {
+        e.preventDefault();
+
+        const form = e.target;
+
+        form.writerName.value = form.writerName.value.trim();
+
+        if (form.writerName.value.length == 0) {
+          alert("작성자를 입력해주세요.");
+          form.writerName.focus();
+          return;
+        }
+
+        form.content.value = form.content.value.trim();
+
+        if (form.content.value.length == 0) {
+          alert("메세지를 입력해주세요.");
+          form.content.focus();
+          return;
+        }
+
+        const writerName = form.writerName.value;
+        const content = form.content.value;
+
+        form.content.value = "";
+        form.content.focus();
+
+        fetch(`/api/v1/chat/rooms/${chatRoomId}/messages`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            writerName,
+            content
+          })
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(`${data.id}번 메세지가 작성되었습니다.`);
+          });
+      };
+
+      if (!chatRoom) return <>로딩중...</>;
+
+      return (
+        <>
+          <h1 className="font-bold text-lg">
+            채팅방(No {chatRoom.id} : {chatRoom.name})
+          </h1>
+          <div className="mt-2">개설날짜 : {dateForPrint(chatRoom.createDate)}</div>
+
+          <hr className="my-2" />
+
+          <h1 className="font-bold text-lg">채팅 메세지 작성</h1>
+
+          <form className="flex gap-2" onSubmit={onChatMessageFormSubmit}>
+            <input
+              className="border p-2 w-20"
+              type="text"
+              placeholder="작성자"
+              name="writerName"
+              autoComplete="off"
+            />
+            <input
+              className="border p-2"
+              type="text"
+              placeholder="메세지"
+              name="content"
+              autoComplete="off"
+            />
+            <input className="border p-2" type="submit" value="작성" />
+          </form>
+
+          <hr className="my-2" />
+
+          <h1 className="font-bold text-lg">채팅 메세지</h1>
+
+          <ul>
+            {chatMessages.map((chatMessage) => (
+              <li key={chatMessage.id}>
+                {chatMessage.id}({dateForPrint(chatMessage.createDate)}) :{" "}
+                {chatMessage.writerName} : {chatMessage.content}
+              </li>
+            ))}
+          </ul>
+        </>
+      );
+    }
+
+    function dateForPrint(date) {
+      return date.substring(2, 16).replaceAll("-", ".").replace("T", " ");
+    }
+
+    rootElement.render(<App />);
+  </script>
+</body>
+</html>
