@@ -41,7 +41,7 @@
 | 01 | 스프링부트 프로젝트 뼈대 | Gradle KTS, `@SpringBootApplication`, application.yaml | `ch01` | ✅ |
 | 02 | 채팅방 도메인 + REST API | data class, `@RestController`, `@CrossOrigin`, 인메모리 저장 | `ch02` | ✅ |
 | 03 | 채팅 메시지 API | `afterChatMessageId` 증분 조회, 메시지 작성 | `ch03` | ✅ |
-| 04 | 프론트 — 폴링 방식 채팅방 | React ESM, `useEffect`/`useRef`, `setInterval` 폴링 | `ch04` | 🟡 |
+| 04 | 프론트 — 폴링 방식 채팅방 | React ESM, `useState`/`useRef`/`useEffect`, `setInterval` 폴링 | `ch04` | 🟡 |
 | 05 | 폴링 vs SSE — 개념과 비용 | 요청 수, 지연, 커넥션 유지, 언제 뭘 쓰나 | `ch05` | ⬜ |
 | 06 | 백엔드 SSE — SseEmitters | `SseEmitter`, `ConcurrentHashMap`, `CopyOnWriteArrayList`, 커넥션 정리 | `ch06` | ⬜ |
 | 07 | 프론트 SSE — EventSource | 잘못된 방식(데이터 직접 수신) vs 옳은 방식(신호로만 사용) | `ch07` | ⬜ |
@@ -50,6 +50,11 @@
 | 10 | 로컬 HTTPS 적용 | `keytool`, PKCS12, `server.ssl.*` | `ch10` | ⬜ |
 | 11 | 미션4 — WebSocket(STOMP) 도입 | `@EnableWebSocketMessageBroker`, SimpleBroker, SockJS, `/topic` | `ch11` | ⬜ |
 | 12 | 세 방식 비교 정리 + 회고 | 폴링/SSE/WebSocket 트레이드오프 표 | `ch12` | ⬜ |
+
+> 사용자는 백엔드(Kotlin/Spring) 기반이고 **JS·React 는 익숙하지 않다.**
+> 프론트 코드를 설명할 때는 **그 코드에 실제로 등장하는 문법**을
+> (화살표 함수, 템플릿 리터럴, 스프레드, `.then` 체인, 훅 등) 그 자리에서 풀어서 설명한다.
+> 별도의 문법 강의 챕터는 만들지 않는다.
 
 상태: ⬜ 대기 · 🟡 진행중 · ✅ 완료
 
