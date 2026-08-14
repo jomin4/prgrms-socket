@@ -141,7 +141,7 @@ src/main/resources/
 
 ## 9. 현재 진행 상황
 
-**✅ ch00 ~ ch04 완료 · 🟡 다음은 ch05**
+**✅ ch00 ~ ch05 완료 · 🟡 다음은 ch06**
 
 | # | 챕터 | 상태 |
 |---|---|---|
@@ -150,21 +150,33 @@ src/main/resources/
 | 02 | 채팅방 도메인 + REST API | ✅ |
 | 03 | 채팅 메시지 API (커서 기반 증분 조회) | ✅ |
 | 04 | 프론트 — 폴링 방식 채팅방 | ✅ |
-| **05** | **폴링 vs SSE — 개념과 비용** | **🟡 다음** |
-| 06~12 | SSE 백/프론트, 쓰로틀링, 입퇴장, HTTPS, STOMP, 정리 | ⬜ |
+| 05 | 폴링 vs SSE — 개념과 비용 → [`03-polling-vs-sse.md`](03-polling-vs-sse.md) | ✅ |
+| **06** | **백엔드 SSE — `SseEmitters`** | **🟡 다음** |
+| 07~12 | 프론트 SSE, 쓰로틀링, 입퇴장, HTTPS, STOMP, 정리 | ⬜ |
 
 전체 목록은 [`00-curriculum.md`](00-curriculum.md), 각 챕터 코드는 [`02-reference.md`](02-reference.md).
 
 > **이 표는 챕터를 끝낼 때마다 갱신할 것.**
 
-### ch05 에서 할 일 (코드 없는 개념 챕터)
+### ch06 에서 할 일 (코드 챕터)
 
-폴링의 비용을 **숫자로** 보여주고 SSE 와 비교한다.
-- ch04 에서 사용자가 직접 본 것: Network 탭에 1초마다 쌓이는 `[]` 응답
-- 접속자 N명 × 초당 1회 → 요청 수 계산, 헤더 오버헤드, 평균 지연(간격의 절반)
-- SSE 는 커넥션 1개를 열어두고 서버가 밀어줌 → 조용하면 트래픽 0, 지연 ~0
-- SSE 의 한계(단방향, 브라우저당 HTTP/1.1 커넥션 6개 제한) → ch11 WebSocket 복선
-- 다이어그램으로 시퀀스 비교하면 좋음
+`global/sse/SseEmitters.kt` + `domain/sse/controller/SseController.kt` 를 만들고,
+`ApiV1ChatMessageController.write()` 에 발행 한 줄을 추가한다.
+**전체 코드는 [`02-reference.md`](02-reference.md) 의 "ch06" 절에 있음.**
+
+설명 축:
+- `SseEmitter` = "응답을 안 닫고 들고 있는 객체". 일반 REST 와 근본적으로 다른 점.
+- `produces = TEXT_EVENT_STREAM_VALUE` 가 SSE 의 전부.
+- **`ConcurrentHashMap` + `CopyOnWriteArrayList` 를 왜 쓰나** — ch02 의 `mutableListOf` 와 대비.
+  여기서는 여러 스레드가 진짜로 동시에 접근한다(요청 스레드가 `send`, 다른 요청 스레드가
+  `connect`, 타임아웃 스레드가 `remove`). `CopyOnWriteArrayList` 는 순회 중 삭제해도
+  `ConcurrentModificationException` 이 안 나므로 `send` 안에서 `remove` 하는 코드가 성립한다.
+- 3중 정리(`onCompletion`/`onTimeout`/`onError`) 안 하면 죽은 커넥션이 쌓여 메모리 누수.
+- 생성자 주입 — ch02/ch03 컨트롤러엔 의존성이 없었으니 여기서 처음 설명.
+- 값 추적: 탭 2개가 붙었을 때 `emittersByKey` 맵이 어떻게 채워지고, 메시지 작성 시
+  `send` 가 몇 명에게 나가는지를 T0/T1/T2 로 보여줄 것.
+- 확인 방법: `curl -N http://localhost:8080/sse/connect/chat__room__2` 로 스트림을 열어두고
+  다른 창에서 메시지를 POST 하면 이벤트가 흘러나오는 걸 눈으로 볼 수 있다.
 
 ---
 
