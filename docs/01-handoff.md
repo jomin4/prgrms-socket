@@ -141,7 +141,7 @@ src/main/resources/
 
 ## 9. 현재 진행 상황
 
-**✅ ch00 ~ ch05 완료 · 🟡 다음은 ch06**
+**✅ ch00 ~ ch06 완료 · 🟡 다음은 ch07**
 
 | # | 챕터 | 상태 |
 |---|---|---|
@@ -151,32 +151,34 @@ src/main/resources/
 | 03 | 채팅 메시지 API (커서 기반 증분 조회) | ✅ |
 | 04 | 프론트 — 폴링 방식 채팅방 | ✅ |
 | 05 | 폴링 vs SSE — 개념과 비용 → [`03-polling-vs-sse.md`](03-polling-vs-sse.md) | ✅ |
-| **06** | **백엔드 SSE — `SseEmitters`** | **🟡 다음** |
-| 07~12 | 프론트 SSE, 쓰로틀링, 입퇴장, HTTPS, STOMP, 정리 | ⬜ |
+| 06 | 백엔드 SSE — `SseEmitters` · `SseController` · 발행 한 줄 | ✅ |
+| **07** | **프론트 SSE — `EventSource`** | **🟡 다음** |
+| 08~12 | 쓰로틀링, 입퇴장, HTTPS, STOMP, 정리 | ⬜ |
 
 전체 목록은 [`00-curriculum.md`](00-curriculum.md), 각 챕터 코드는 [`02-reference.md`](02-reference.md).
 
 > **이 표는 챕터를 끝낼 때마다 갱신할 것.**
 
-### ch06 에서 할 일 (코드 챕터)
+### ch07 에서 할 일 (코드 챕터 — 이 강의의 하이라이트)
 
-`global/sse/SseEmitters.kt` + `domain/sse/controller/SseController.kt` 를 만들고,
-`ApiV1ChatMessageController.write()` 에 발행 한 줄을 추가한다.
-**전체 코드는 [`02-reference.md`](02-reference.md) 의 "ch06" 절에 있음.**
+`static/index.html` **한 파일만** 수정한다. 백엔드는 손대지 않는다.
+**전체 코드는 [`02-reference.md`](02-reference.md) 의 "ch07" 절에 있음.**
 
-설명 축:
-- `SseEmitter` = "응답을 안 닫고 들고 있는 객체". 일반 REST 와 근본적으로 다른 점.
-- `produces = TEXT_EVENT_STREAM_VALUE` 가 SSE 의 전부.
-- **`ConcurrentHashMap` + `CopyOnWriteArrayList` 를 왜 쓰나** — ch02 의 `mutableListOf` 와 대비.
-  여기서는 여러 스레드가 진짜로 동시에 접근한다(요청 스레드가 `send`, 다른 요청 스레드가
-  `connect`, 타임아웃 스레드가 `remove`). `CopyOnWriteArrayList` 는 순회 중 삭제해도
-  `ConcurrentModificationException` 이 안 나므로 `send` 안에서 `remove` 하는 코드가 성립한다.
-- 3중 정리(`onCompletion`/`onTimeout`/`onError`) 안 하면 죽은 커넥션이 쌓여 메모리 누수.
-- 생성자 주입 — ch02/ch03 컨트롤러엔 의존성이 없었으니 여기서 처음 설명.
-- 값 추적: 탭 2개가 붙었을 때 `emittersByKey` 맵이 어떻게 채워지고, 메시지 작성 시
-  `send` 가 몇 명에게 나가는지를 T0/T1/T2 로 보여줄 것.
-- 확인 방법: `curl -N http://localhost:8080/sse/connect/chat__room__2` 로 스트림을 열어두고
-  다른 창에서 메시지를 POST 하면 이벤트가 흘러나오는 걸 눈으로 볼 수 있다.
+핵심은 **두 단계로 나눠서 가르치는 것** (강의가 그렇게 함):
+1. ❌ **1단계 — 틀린 방식**: SSE 이벤트의 `e.data` 를 파싱해서 바로 화면에 넣는다.
+   무엇이 깨지는지를 **값으로 추적해서** 보여줄 것 — 최초 로딩과 경쟁해서 순서 뒤바뀜,
+   `lastChatMessageId.current` 가 안 올라가서 나중에 중복, 재연결 중 발행분은 영영 누락.
+2. ✅ **2단계 — 옳은 방식**: SSE 를 **"새 게 있다" 신호로만** 쓰고 `loadMoreChatMessages()` 를 호출.
+   `e.data` 를 아예 안 쓴다. `setInterval` → `EventSource` 로 트리거만 교체되고
+   `loadMoreChatMessages` 는 **한 글자도 안 바뀐다** (ch03 커서 설계의 회수 지점).
+
+그 외 짚을 것:
+- `new EventSource(url)` / `addEventListener(이벤트이름, 콜백)` — 이벤트 이름은
+  백엔드 `send()` 의 2번째 인자와 정확히 일치해야 함 (`chat__messageCreated`).
+- cleanup 이 `clearInterval` → `eventSource.close()` 로 바뀜.
+- `EventSource` 는 끊기면 **자동 재연결**한다 (폴링과 달리 우리가 관리 안 해도 됨).
+- 확인: F12 Network 탭에서 1초마다 쌓이던 요청이 사라지고
+  `/sse/connect/...` 하나만 `pending` 상태로 남는 것을 눈으로 볼 것.
 
 ---
 
