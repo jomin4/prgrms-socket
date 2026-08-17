@@ -141,7 +141,7 @@ src/main/resources/
 
 ## 9. 현재 진행 상황
 
-**✅ ch00 ~ ch06 완료 · 🟡 다음은 ch07**
+**✅ ch00 ~ ch07 완료 · 🟡 다음은 ch08**
 
 | # | 챕터 | 상태 |
 |---|---|---|
@@ -152,33 +152,34 @@ src/main/resources/
 | 04 | 프론트 — 폴링 방식 채팅방 | ✅ |
 | 05 | 폴링 vs SSE — 개념과 비용 → [`03-polling-vs-sse.md`](03-polling-vs-sse.md) | ✅ |
 | 06 | 백엔드 SSE — `SseEmitters` · `SseController` · 발행 한 줄 | ✅ |
-| **07** | **프론트 SSE — `EventSource`** | **🟡 다음** |
-| 08~12 | 쓰로틀링, 입퇴장, HTTPS, STOMP, 정리 | ⬜ |
+| 07 | 프론트 SSE — `EventSource` (폴링 제거 완료) | ✅ |
+| **08** | **미션2 — 쓰로틀링** | **🟡 다음** |
+| 09~12 | 입퇴장·방이동, HTTPS, STOMP, 정리 | ⬜ |
 
 전체 목록은 [`00-curriculum.md`](00-curriculum.md), 각 챕터 코드는 [`02-reference.md`](02-reference.md).
 
 > **이 표는 챕터를 끝낼 때마다 갱신할 것.**
 
-### ch07 에서 할 일 (코드 챕터 — 이 강의의 하이라이트)
+### ch08 에서 할 일 (코드 챕터)
 
 `static/index.html` **한 파일만** 수정한다. 백엔드는 손대지 않는다.
-**전체 코드는 [`02-reference.md`](02-reference.md) 의 "ch07" 절에 있음.**
+**전체 코드는 [`02-reference.md`](02-reference.md) 의 "ch08" 절에 있음.**
 
-핵심은 **두 단계로 나눠서 가르치는 것** (강의가 그렇게 함):
-1. ❌ **1단계 — 틀린 방식**: SSE 이벤트의 `e.data` 를 파싱해서 바로 화면에 넣는다.
-   무엇이 깨지는지를 **값으로 추적해서** 보여줄 것 — 최초 로딩과 경쟁해서 순서 뒤바뀜,
-   `lastChatMessageId.current` 가 안 올라가서 나중에 중복, 재연결 중 발행분은 영영 누락.
-2. ✅ **2단계 — 옳은 방식**: SSE 를 **"새 게 있다" 신호로만** 쓰고 `loadMoreChatMessages()` 를 호출.
-   `e.data` 를 아예 안 쓴다. `setInterval` → `EventSource` 로 트리거만 교체되고
-   `loadMoreChatMessages` 는 **한 글자도 안 바뀐다** (ch03 커서 설계의 회수 지점).
+미션: 한 방에서 메시지 100개가 동시에 터져도 `loadMoreChatMessages` 가
+100번이 아니라 **더 적게** 실행되도록 (쓰로틀링).
 
-그 외 짚을 것:
-- `new EventSource(url)` / `addEventListener(이벤트이름, 콜백)` — 이벤트 이름은
-  백엔드 `send()` 의 2번째 인자와 정확히 일치해야 함 (`chat__messageCreated`).
-- cleanup 이 `clearInterval` → `eventSource.close()` 로 바뀜.
-- `EventSource` 는 끊기면 **자동 재연결**한다 (폴링과 달리 우리가 관리 안 해도 됨).
-- 확인: F12 Network 탭에서 1초마다 쌓이던 요청이 사라지고
-  `/sse/connect/...` 하나만 `pending` 상태로 남는 것을 눈으로 볼 것.
+설명 축:
+- **쓰로틀링 vs 디바운싱** — 타임라인 그림으로 비교할 것.
+  채팅에는 **쓰로틀링**이 맞다. 디바운싱이면 사람들이 계속 떠드는 동안
+  화면이 **영영 갱신되지 않는다**.
+- `useCallback` 이 없으면 리렌더마다 새 throttle 함수가 생겨 **쓰로틀 상태가 초기화**되어
+  무의미해진다. 이게 이 챕터의 핵심 함정.
+- `.then` 체인 → `async/await` 로 바뀌는 것도 같이 설명 (같은 일, 읽기 쉬운 문법).
+- ⚠️ 강의 코드는 `if (data.length > 0)` 가드를 **삭제**한다. SSE 신호가 올 때만 호출되니
+  빈 배열이 안 온다는 전제인데, 쓰로틀로 요청이 합쳐지면 그 전제가 깨질 수 있다.
+  `data[0].id` 에서 터지는 시나리오를 함정으로 짚어줄 것.
+- 확인: 짧은 시간에 메시지를 여러 개 쏟아붓고 Network 탭에서
+  요청 수가 이벤트 수보다 적은지 볼 것.
 
 ---
 

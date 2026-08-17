@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>실시간 채팅 — 폴링 방식</title>
+  <title>실시간 채팅 — SSE 방식</title>
 
   <link rel="stylesheet" as="style" crossorigin
         href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
@@ -45,15 +45,23 @@
       useEffect(() => {
         // 채팅방 정보 가져오기
         fetch(`/api/v1/chat/rooms/${chatRoomId}`)
-          .then((response) => response.json())
-          .then(setChatRoom);
+                .then((response) => response.json())
+                .then(setChatRoom);
 
-        // 1초마다 메시지 로드
-        const intervalId = setInterval(loadMoreChatMessages, 1000);
+        // 최초 1회는 명시적으로 로딩
+        loadMoreChatMessages();
 
-        // 컴포넌트가 언마운트될 때 인터벌 해제
-        return () => clearInterval(intervalId);
-      }, [chatRoomId]); // chatRoomId가 바뀔 때만 재실행
+        // SSE 연결
+        const eventSource = new EventSource(
+                `/sse/connect/chat__room__${chatRoomId}`
+        );
+
+        eventSource.addEventListener("chat__messageCreated", (e) => {
+          loadMoreChatMessages();
+        });
+
+        return () => eventSource.close();
+      }, [chatRoomId]);
 
       const onChatMessageFormSubmit = (e) => {
         e.preventDefault();
