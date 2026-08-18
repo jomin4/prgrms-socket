@@ -37,7 +37,11 @@ keytool -genkey -alias sb-ssl -storetype PKCS12 -keyalg RSA -keysize 2048 -keyst
 
 ## 진행 상황
 
-챕터별 목표와 체크리스트는 [`docs/00-curriculum.md`](docs/00-curriculum.md).
+**✅ ch00 ~ ch12 전체 완료** — 폴링에서 시작해 SSE 를 거쳐 WebSocket(STOMP)까지 도달했습니다.
+
+- 챕터별 목표와 체크리스트 → [`docs/00-curriculum.md`](docs/00-curriculum.md)
+- **최종 회고와 세 방식 비교** → [`docs/04-retrospective.md`](docs/04-retrospective.md)
+- 학습 중 나온 질문 기록 → [`docs/qna/`](docs/qna/README.md)
 
 각 챕터 완료 시점은 `ch00` `ch01` … 태그로 남아 있습니다.
 

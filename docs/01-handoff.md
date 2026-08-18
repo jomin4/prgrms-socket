@@ -141,7 +141,7 @@ src/main/resources/
 
 ## 9. 현재 진행 상황
 
-**✅ ch00 ~ ch11 완료 · 🟡 마지막 ch12**
+**🎉 ch00 ~ ch12 전체 완료 — 커리큘럼 종료**
 
 | # | 챕터 | 상태 |
 |---|---|---|
@@ -157,34 +157,28 @@ src/main/resources/
 | 09 | 미션3 — 입장/퇴장 시스템 메시지 + 방 이동 | ✅ |
 | 10 | 로컬 HTTPS 적용 (자가서명 인증서) | ✅ |
 | 11 | 미션4 — WebSocket(STOMP) 도입 | ✅ |
-| **12** | **세 방식 비교 정리 + 회고** | **🟡 마지막** |
+| 12 | 세 방식 비교 정리 + 회고 → [`04-retrospective.md`](04-retrospective.md) | ✅ |
 
 전체 목록은 [`00-curriculum.md`](00-curriculum.md), 각 챕터 코드는 [`02-reference.md`](02-reference.md).
 
 > **이 표는 챕터를 끝낼 때마다 갱신할 것.**
 
-### ch11 에서 할 일 (코드 챕터 — 파일 4개, 하나씩 진행)
+### 커리큘럼은 끝났다 — 이후 세션에서 할 일
 
-**전체 코드는 [`02-reference.md`](02-reference.md) 의 "ch11" 절에 있음.**
+원래 12챕터는 모두 완료됐다. 회고는 [`04-retrospective.md`](04-retrospective.md).
 
-| 순서 | 파일 | 내용 |
+사용자가 더 진행하고 싶어 하면 **거기 5절 "안 다룬 것"** 에서 골라 새 챕터를 추가하고
+[`00-curriculum.md`](00-curriculum.md) 에 append 한다 (성장형 원칙). 난이도 순 후보:
+
+| 후보 | 내용 | 난이도 |
 |---|---|---|
-| 0 | `build.gradle.kts` | `spring-boot-starter-websocket` 한 줄 (파일 취급 안 함) |
-| 1/3 | `global/stomp/StompSimpleBrokerConfig.kt` | 신규. 엔드포인트 `/ws` + SimpleBroker `/topic` |
-| 2/3 | `ApiV1ChatMessageController.kt` | `SimpMessagingTemplate` 주입 + `convertAndSend` 3줄 |
-| 3/3 | `static/index.html` | SockJS + Stomp.js, `subscribe` 로 교체 |
+| ch13 | **커넥션 종료로 퇴장 감지** — `SseEmitters.onCompletion` 에서 자동 발행,<br>STOMP 는 `SessionDisconnectEvent` 를 `@EventListener` 로 | ★☆☆ |
+| ch14 | **과거 메시지 페이징** — `beforeChatMessageId` 추가, 위로 스크롤 로딩 | ★★☆ |
+| ch15 | **DB 영속화** — JPA 도입, 인메모리 컬렉션 제거 | ★★☆ |
+| ch16 | **인증·인가** — 지금은 누구나 `/sse/connect/아무키` 로 남의 채널을 구독 가능 | ★★★ |
+| ch17 | **다중 서버** — `SimpleBroker` 는 서버 간 공유 안 됨 → Redis Pub/Sub 또는 RabbitMQ 릴레이 | ★★★ |
 
-짚을 것:
-- **SSE 코드를 지우지 않고 병행**한다. 둘을 비교하며 전환하기 위함 (강의도 그렇게 함).
-- ⚠️ **[적용]** 원본은 `setAllowedOrigins("https://cdpn.io")` 뿐이라 우리 오리진에서 막힌다.
-  `"https://localhost:8080"` 을 반드시 추가할 것.
-- `/topic` = 브로커 목적지(구독), `/app` = 서버 핸들러 목적지. 우리는 발행을 REST 로
-  하므로 `/app` 은 안 쓴다.
-- `stompConnected` Promise — 연결은 앱당 1회, 구독은 방마다. `await` 로 순서 보장.
-- **여기서도 `messageCreated` 는 신호로만, `systemMessageCreated` 만 데이터 직접 사용.**
-  ch07·ch09 와 완전히 같은 원칙 — 통신 수단만 바뀌었을 뿐임을 강조할 것.
-- SockJS 는 WebSocket 이 막힌 환경을 위한 폴백 계층.
-- ch10 에서 https 를 켰으므로 `wss://` 로 자동 연결된다 (상대경로 `/ws` 사용).
+새 챕터도 기존 방식 그대로: 시각화 먼저 → 파일 하나씩 → 값 추적 → 승인 → 반영 → 커밋.
 
 ---
 
