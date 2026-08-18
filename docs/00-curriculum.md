@@ -46,8 +46,8 @@
 | 06 | 백엔드 SSE — SseEmitters | `SseEmitter`, `ConcurrentHashMap`, `CopyOnWriteArrayList`, 커넥션 정리 | `ch06` | ✅ |
 | 07 | 프론트 SSE — EventSource | 잘못된 방식(데이터 직접 수신) vs 옳은 방식(신호로만 사용) | `ch07` | ✅ |
 | 08 | 미션2 — 쓰로틀링 | throttle vs debounce, `useCallback` + lodash `throttle` | `ch08` | ✅ |
-| 09 | 미션3 — 입장/퇴장 시스템 메시지 | 이벤트 순서 문제, cleanup 함수, 채팅방 이동 | `ch09` | 🟡 |
-| 10 | 로컬 HTTPS 적용 | `keytool`, PKCS12, `server.ssl.*` | `ch10` | ⬜ |
+| 09 | 미션3 — 입장/퇴장 시스템 메시지 | 이벤트 순서 문제, cleanup 함수, 채팅방 이동 | `ch09` | ✅ |
+| 10 | 로컬 HTTPS 적용 | `keytool`, PKCS12, `server.ssl.*` | `ch10` | 🟡 |
 | 11 | 미션4 — WebSocket(STOMP) 도입 | `@EnableWebSocketMessageBroker`, SimpleBroker, SockJS, `/topic` | `ch11` | ⬜ |
 | 12 | 세 방식 비교 정리 + 회고 | 폴링/SSE/WebSocket 트레이드오프 표 | `ch12` | ⬜ |
 

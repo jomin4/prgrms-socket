@@ -141,7 +141,7 @@ src/main/resources/
 
 ## 9. 현재 진행 상황
 
-**✅ ch00 ~ ch08 완료 · 🟡 다음은 ch09**
+**✅ ch00 ~ ch09 완료 · 🟡 다음은 ch10**
 
 | # | 챕터 | 상태 |
 |---|---|---|
@@ -154,33 +154,29 @@ src/main/resources/
 | 06 | 백엔드 SSE — `SseEmitters` · `SseController` · 발행 한 줄 | ✅ |
 | 07 | 프론트 SSE — `EventSource` (폴링 제거 완료) | ✅ |
 | 08 | 미션2 — 쓰로틀링 (lodash throttle + useCallback) | ✅ |
-| **09** | **미션3 — 입장/퇴장 시스템 메시지 + 방 이동** | **🟡 다음** |
-| 10~12 | HTTPS, STOMP, 정리 | ⬜ |
+| 09 | 미션3 — 입장/퇴장 시스템 메시지 + 방 이동 | ✅ |
+| **10** | **로컬 HTTPS 적용** | **🟡 다음** |
+| 11~12 | STOMP, 정리 | ⬜ |
 
 전체 목록은 [`00-curriculum.md`](00-curriculum.md), 각 챕터 코드는 [`02-reference.md`](02-reference.md).
 
 > **이 표는 챕터를 끝낼 때마다 갱신할 것.**
 
-### ch09 에서 할 일 (코드 챕터 — 파일 2개)
+### ch10 에서 할 일 (설정 챕터 — 코드 거의 없음)
 
-**파일 1/2 백엔드**: `ApiV1ChatMessageController` 에 `/entry` `/exit` 엔드포인트 추가.
-**파일 2/2 프론트**: `static/index.html` 에 방 이동 버튼 + 시스템 메시지 리스너 + 입퇴장 호출.
-**전체 코드는 [`02-reference.md`](02-reference.md) 의 "ch09" 절에 있음.**
+`application.yaml` **한 파일만** 수정. 인증서는 **사용자가 직접** 만든다.
+**전체 내용은 [`02-reference.md`](02-reference.md) 의 "ch10" 절에 있음.**
 
-이 챕터의 반전 (반드시 짚을 것):
-- 시스템 메시지는 `chatMessagesByRoomId` 에 **저장하지 않고 발행만** 한다.
-  → **커서로 다시 못 가져온다** → 프론트가 `e.data` 를 **직접 써야 하는 유일한 예외**.
-  ch07 에서 "직접 쓰지 마라" 했던 것과 왜 다른지 대비해서 설명할 것.
-  (핵심 기준: **서버에 저장돼서 다시 조회할 수 있는가?**)
-- id 는 소비하므로 일반 메시지 번호에 **구멍이 생긴다** — 관찰거리로 던져줄 것.
-
-프론트 순서 문제 (강의 9강 1단계가 고치는 것):
-- **기존 메시지 로딩이 끝난 뒤에** 입장 알림을 보내야 한다.
-  안 그러면 "입장했습니다" 가 옛날 메시지들보다 **위에** 떠버린다.
-  → `await _loadMoreChatMessages()` 후에 `POST /entry`.
-- 방 이동 시 `lastChatMessageId.current = 0` + `setChatMessages([])` 리셋 필수.
-  안 하면 이전 방 메시지가 남고 커서가 이어져 새 방 메시지를 못 받는다.
-- cleanup 이 이제 두 가지 일을 한다: `eventSource.close()` + `POST /exit`.
+- `keytool` 은 **대화형 프롬프트**라 Claude 가 대신 실행하면 안 된다. 명령만 안내할 것.
+  (이 PC 는 Temurin JDK 25 의 `keytool` 이 PATH 에 있음)
+- 비밀번호 `123456`, 나머지 항목은 빈칸 엔터, 마지막 확인에 `y`.
+- 생성된 `keystore.p12` 는 **프로젝트 루트**에 두고, `.gitignore` 되어 커밋되지 않는다.
+- **우리는 API 를 상대경로로 짜서 프론트를 한 글자도 안 고친다.**
+  강의는 `http://` → `https://` 를 전부 치환하는 단계가 따로 있었다는 걸 대비해서 알려줄 것.
+- 적용 후 `http://localhost:8080` 은 **더 이상 안 된다** → `https://localhost:8080`.
+  자가서명이라 브라우저 경고 → "고급 → 계속 진행".
+- `curl` 도 `-k` 옵션이 필요해진다.
+- 왜 지금 하는가: **ch11 STOMP 의 `wss://` 준비** + HTTP/2 로 커넥션 6개 제한 완화.
 
 ---
 

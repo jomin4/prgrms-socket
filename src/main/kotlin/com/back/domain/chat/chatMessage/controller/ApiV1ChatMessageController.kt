@@ -109,4 +109,33 @@ class ApiV1ChatMessageController (
 
         return chatMessage
     }
+
+
+    @PostMapping("/entry")
+    fun entry(@PathVariable chatRoomId: Int) {
+        val systemMessage = ChatMessage(
+            ++lastChatMessageId,
+            LocalDateTime.now(),
+            LocalDateTime.now(),
+            chatRoomId,
+            "system",
+            "새로운 사용자가 입장했습니다."
+        )
+
+        sseEmitters.send("chat__room__$chatRoomId", "chat__systemMessageCreated", systemMessage)
+    }
+
+    @PostMapping("/exit")
+    fun exit(@PathVariable chatRoomId: Int) {
+        val systemMessage = ChatMessage(
+            ++lastChatMessageId,
+            LocalDateTime.now(),
+            LocalDateTime.now(),
+            chatRoomId,
+            "system",
+            "어떤 사용자가 퇴장했습니다."
+        )
+
+        sseEmitters.send("chat__room__$chatRoomId", "chat__systemMessageCreated", systemMessage)
+    }
 }

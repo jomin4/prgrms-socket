@@ -24,7 +24,7 @@
     const rootElement = ReactDOMClient.createRoot(document.getElementById("root"));
 
     function App() {
-      const chatRoomId = 2;
+      const [chatRoomId, setChatRoomId] = useState(2);
       const lastChatMessageId = useRef(0);
       const [chatRoom, setChatRoom] = useState();
       const [chatMessages, setChatMessages] = useState([]);
@@ -52,24 +52,45 @@
       );
 
       useEffect(() => {
+        // 방이 바뀌면 커서와 목록을 초기화
+        lastChatMessageId.current = 0;
+        setChatMessages([]);
+
         // 채팅방 정보 가져오기
         fetch(`/api/v1/chat/rooms/${chatRoomId}`)
                 .then((response) => response.json())
                 .then(setChatRoom);
 
-        // 최초 1회는 명시적으로 로딩
-        loadMoreChatMessages();
-
-        // SSE 연결
+        // SSE 연결 (cleanup 에서 참조해야 하므로 async 블록 밖에서 생성)
         const eventSource = new EventSource(
                 `/sse/connect/chat__room__${chatRoomId}`
         );
 
-        eventSource.addEventListener("chat__messageCreated", (e) => {
-          loadMoreChatMessages();
-        });
+        (async () => {
+          // 기존 메시지를 다 그린 뒤에 입장 알림을 보낸다 (순서 보장)
+          await _loadMoreChatMessages();
 
-        return () => eventSource.close();
+          eventSource.addEventListener("chat__messageCreated", () => {
+            loadMoreChatMessages();
+          });
+
+          eventSource.addEventListener("chat__systemMessageCreated", (e) => {
+            const newMessage = JSON.parse(e.data);
+            setChatMessages((prevMessages) => [newMessage, ...prevMessages]);
+          });
+
+          fetch(`/api/v1/chat/rooms/${chatRoomId}/messages/entry`, {
+            method: "POST"
+          });
+        })();
+
+        return () => {
+          eventSource.close();
+
+          fetch(`/api/v1/chat/rooms/${chatRoomId}/messages/exit`, {
+            method: "POST"
+          });
+        };
       }, [chatRoomId]);
 
       const onChatMessageFormSubmit = (e) => {
@@ -119,6 +140,18 @@
 
       return (
         <>
+          <div className="flex gap-2 mb-2">
+            <button className="border p-2" onClick={() => setChatRoomId(1)}>
+              1번 채팅방
+            </button>
+            <button className="border p-2" onClick={() => setChatRoomId(2)}>
+              2번 채팅방
+            </button>
+            <button className="border p-2" onClick={() => setChatRoomId(3)}>
+              3번 채팅방
+            </button>
+          </div>
+
           <h1 className="font-bold text-lg">
             채팅방(No {chatRoom.id} : {chatRoom.name})
           </h1>
