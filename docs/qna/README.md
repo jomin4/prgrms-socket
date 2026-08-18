@@ -8,3 +8,4 @@
 | [002](002-loadMoreChatMessages-데이터-흐름.md) | `loadMoreChatMessages` 안에 실제로 어떤 값이 들어오고 어떻게 처리되나? | ch04 | 2026-08-07 |
 | [003](003-powershell-curl-json-따옴표.md) | PowerShell 에서 `curl -d "{\"key\":\"value\"}"` 가 400 에러 나는 이유 | ch06 | 2026-08-18 |
 | [004](004-keytool-인증서-tls-원리.md) | `keytool` 은 무엇을 만들고, 서버와 브라우저는 어떻게 증명하나? | ch10 | 2026-08-18 |
+| [005](005-스프링-빈-프록시-런타임구조.md) | JVM 안에서 스프링은 애노테이션·객체·프록시를 어떻게 처리하나? | ch11 | 2026-08-18 |

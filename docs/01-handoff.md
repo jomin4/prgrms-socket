@@ -141,7 +141,7 @@ src/main/resources/
 
 ## 9. 현재 진행 상황
 
-**✅ ch00 ~ ch10 완료 · 🟡 다음은 ch11**
+**✅ ch00 ~ ch11 완료 · 🟡 마지막 ch12**
 
 | # | 챕터 | 상태 |
 |---|---|---|
@@ -156,8 +156,8 @@ src/main/resources/
 | 08 | 미션2 — 쓰로틀링 (lodash throttle + useCallback) | ✅ |
 | 09 | 미션3 — 입장/퇴장 시스템 메시지 + 방 이동 | ✅ |
 | 10 | 로컬 HTTPS 적용 (자가서명 인증서) | ✅ |
-| **11** | **미션4 — WebSocket(STOMP) 도입** | **🟡 다음** |
-| 12 | 세 방식 비교 정리 + 회고 | ⬜ |
+| 11 | 미션4 — WebSocket(STOMP) 도입 | ✅ |
+| **12** | **세 방식 비교 정리 + 회고** | **🟡 마지막** |
 
 전체 목록은 [`00-curriculum.md`](00-curriculum.md), 각 챕터 코드는 [`02-reference.md`](02-reference.md).
 

@@ -48,8 +48,8 @@
 | 08 | 미션2 — 쓰로틀링 | throttle vs debounce, `useCallback` + lodash `throttle` | `ch08` | ✅ |
 | 09 | 미션3 — 입장/퇴장 시스템 메시지 | 이벤트 순서 문제, cleanup 함수, 채팅방 이동 | `ch09` | ✅ |
 | 10 | 로컬 HTTPS 적용 | `keytool`, PKCS12, `server.ssl.*` | `ch10` | ✅ |
-| 11 | 미션4 — WebSocket(STOMP) 도입 | `@EnableWebSocketMessageBroker`, SimpleBroker, SockJS, `/topic` | `ch11` | 🟡 |
-| 12 | 세 방식 비교 정리 + 회고 | 폴링/SSE/WebSocket 트레이드오프 표 | `ch12` | ⬜ |
+| 11 | 미션4 — WebSocket(STOMP) 도입 | `@EnableWebSocketMessageBroker`, SimpleBroker, SockJS, `/topic` | `ch11` | ✅ |
+| 12 | 세 방식 비교 정리 + 회고 | 폴링/SSE/WebSocket 트레이드오프 표 | `ch12` | 🟡 |
 
 > 사용자는 백엔드(Kotlin/Spring) 기반이고 **JS·React 는 익숙하지 않다.**
 > 프론트 코드를 설명할 때는 **그 코드에 실제로 등장하는 문법**을
