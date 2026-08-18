@@ -141,7 +141,7 @@ src/main/resources/
 
 ## 9. 현재 진행 상황
 
-**✅ ch00 ~ ch09 완료 · 🟡 다음은 ch10**
+**✅ ch00 ~ ch10 완료 · 🟡 다음은 ch11**
 
 | # | 챕터 | 상태 |
 |---|---|---|
@@ -155,28 +155,36 @@ src/main/resources/
 | 07 | 프론트 SSE — `EventSource` (폴링 제거 완료) | ✅ |
 | 08 | 미션2 — 쓰로틀링 (lodash throttle + useCallback) | ✅ |
 | 09 | 미션3 — 입장/퇴장 시스템 메시지 + 방 이동 | ✅ |
-| **10** | **로컬 HTTPS 적용** | **🟡 다음** |
-| 11~12 | STOMP, 정리 | ⬜ |
+| 10 | 로컬 HTTPS 적용 (자가서명 인증서) | ✅ |
+| **11** | **미션4 — WebSocket(STOMP) 도입** | **🟡 다음** |
+| 12 | 세 방식 비교 정리 + 회고 | ⬜ |
 
 전체 목록은 [`00-curriculum.md`](00-curriculum.md), 각 챕터 코드는 [`02-reference.md`](02-reference.md).
 
 > **이 표는 챕터를 끝낼 때마다 갱신할 것.**
 
-### ch10 에서 할 일 (설정 챕터 — 코드 거의 없음)
+### ch11 에서 할 일 (코드 챕터 — 파일 4개, 하나씩 진행)
 
-`application.yaml` **한 파일만** 수정. 인증서는 **사용자가 직접** 만든다.
-**전체 내용은 [`02-reference.md`](02-reference.md) 의 "ch10" 절에 있음.**
+**전체 코드는 [`02-reference.md`](02-reference.md) 의 "ch11" 절에 있음.**
 
-- `keytool` 은 **대화형 프롬프트**라 Claude 가 대신 실행하면 안 된다. 명령만 안내할 것.
-  (이 PC 는 Temurin JDK 25 의 `keytool` 이 PATH 에 있음)
-- 비밀번호 `123456`, 나머지 항목은 빈칸 엔터, 마지막 확인에 `y`.
-- 생성된 `keystore.p12` 는 **프로젝트 루트**에 두고, `.gitignore` 되어 커밋되지 않는다.
-- **우리는 API 를 상대경로로 짜서 프론트를 한 글자도 안 고친다.**
-  강의는 `http://` → `https://` 를 전부 치환하는 단계가 따로 있었다는 걸 대비해서 알려줄 것.
-- 적용 후 `http://localhost:8080` 은 **더 이상 안 된다** → `https://localhost:8080`.
-  자가서명이라 브라우저 경고 → "고급 → 계속 진행".
-- `curl` 도 `-k` 옵션이 필요해진다.
-- 왜 지금 하는가: **ch11 STOMP 의 `wss://` 준비** + HTTP/2 로 커넥션 6개 제한 완화.
+| 순서 | 파일 | 내용 |
+|---|---|---|
+| 0 | `build.gradle.kts` | `spring-boot-starter-websocket` 한 줄 (파일 취급 안 함) |
+| 1/3 | `global/stomp/StompSimpleBrokerConfig.kt` | 신규. 엔드포인트 `/ws` + SimpleBroker `/topic` |
+| 2/3 | `ApiV1ChatMessageController.kt` | `SimpMessagingTemplate` 주입 + `convertAndSend` 3줄 |
+| 3/3 | `static/index.html` | SockJS + Stomp.js, `subscribe` 로 교체 |
+
+짚을 것:
+- **SSE 코드를 지우지 않고 병행**한다. 둘을 비교하며 전환하기 위함 (강의도 그렇게 함).
+- ⚠️ **[적용]** 원본은 `setAllowedOrigins("https://cdpn.io")` 뿐이라 우리 오리진에서 막힌다.
+  `"https://localhost:8080"` 을 반드시 추가할 것.
+- `/topic` = 브로커 목적지(구독), `/app` = 서버 핸들러 목적지. 우리는 발행을 REST 로
+  하므로 `/app` 은 안 쓴다.
+- `stompConnected` Promise — 연결은 앱당 1회, 구독은 방마다. `await` 로 순서 보장.
+- **여기서도 `messageCreated` 는 신호로만, `systemMessageCreated` 만 데이터 직접 사용.**
+  ch07·ch09 와 완전히 같은 원칙 — 통신 수단만 바뀌었을 뿐임을 강조할 것.
+- SockJS 는 WebSocket 이 막힌 환경을 위한 폴백 계층.
+- ch10 에서 https 를 켰으므로 `wss://` 로 자동 연결된다 (상대경로 `/ws` 사용).
 
 ---
 

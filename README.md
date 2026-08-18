@@ -7,14 +7,33 @@
 
 ## 실행
 
+### 1. 인증서 생성 (최초 1회, 필수)
+
+`keystore.p12` 는 개인키를 담고 있어 **커밋되지 않습니다.** 클론 후 직접 만들어야 합니다.
+없으면 앱이 부팅에 실패합니다.
+
+**프로젝트 루트**에서:
+
+```bash
+keytool -genkey -alias sb-ssl -storetype PKCS12 -keyalg RSA -keysize 2048 -keystore keystore.p12 -validity 3650
+```
+
+- 비밀번호는 **`123456`** (두 번 입력) — `application.yaml` 에 그 값으로 적혀 있습니다
+- 이름·조직·국가 등은 **전부 빈칸으로 엔터**
+- 마지막 `맞습니까?` 에 **`y`**
+
+원리가 궁금하면 [`docs/qna/004-keytool-인증서-tls-원리.md`](docs/qna/004-keytool-인증서-tls-원리.md).
+
+### 2. 서버 실행
+
 ```bash
 ./gradlew bootRun
 ```
 
-`http://localhost:8080` 접속. 채팅 확인은 탭 2개 이상 띄워서.
+**`https://localhost:8080`** 접속. 채팅 확인은 탭 2개 이상 띄워서.
 
-> 10장(HTTPS) 이후에는 `https://localhost:8080`, 그리고 `keystore.p12` 를 직접 생성해야 합니다.
-> 인증서는 `.gitignore` 되어 있습니다.
+> ⚠️ 자가서명 인증서라 브라우저 경고가 뜹니다 → **고급 → 계속 진행**. 정상입니다.
+> `curl` 로 테스트할 때는 `-k` 옵션이 필요합니다.
 
 ## 진행 상황
 
