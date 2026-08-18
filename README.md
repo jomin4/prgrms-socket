@@ -43,23 +43,6 @@ keytool -genkey -alias sb-ssl -storetype PKCS12 -keyalg RSA -keysize 2048 -keyst
 - **최종 회고와 세 방식 비교** → [`docs/04-retrospective.md`](docs/04-retrospective.md)
 - 학습 중 나온 질문 기록 → [`docs/qna/`](docs/qna/README.md)
 
-## 🎛 복습 대시보드
-
-[`docs/dashboard.html`](docs/dashboard.html) 을 **브라우저로 그냥 열면** 됩니다.
-서버도 인터넷도 필요 없습니다 (외부 의존성 0).
-
-| 사이드바 | 무엇을 보여주나 |
-|---|---|
-| 개요 | 세 방식의 도착 시각 비교 — 트리거만 다르고 나머지는 동일 |
-| 폴링 | 시간축 타임라인. 간격 슬라이더로 낭비 ↔ 지연 트레이드오프 체감 |
-| SSE | `emittersByKey` 자료구조. 탭 연결/해제 시 칩이 들고 남, 키 격리 확인 |
-| WebSocket | JVM 컨테이너 안 스프링 빈들이 순차 하이라이트 + STOMP 프레임 로그 |
-| 스프링 부팅 | 스캔 → 빈 등록 → CGLIB 프록시 → 생성자 주입 애니메이션 |
-| 함정 | 밟았던 함정 6개가 값 단위로 어떻게 깨지는지 재생 |
-
-**모든 박스는 클릭할 수 있습니다.** 클릭하면 하단에 해당 코드의 파일 경로와 실제 코드 조각이 열려서,
-그림 ↔ 코드를 대조하며 복습할 수 있습니다.
-
 각 챕터 완료 시점은 `ch00` `ch01` … 태그로 남아 있습니다.
 
 ```bash
